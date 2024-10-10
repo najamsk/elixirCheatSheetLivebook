@@ -1,0 +1,683 @@
+# Elixir Cheetsheet
+
+## Pattern Matching
+
+```elixir
+user = %{name: "tom", age: 23}
+%{name: username} = user
+username
+```
+
+### Pattern Matching
+
+```elixir
+defmodule Example do
+  def greet(%{name: username}) do
+    "hello " <> username
+  end
+end
+
+user = %{name: "tom"}
+Example.greet(user)
+```
+
+## Control Flow
+
+### IF
+
+```elixir
+if false do
+  IO.puts("false")
+else
+  IO.puts("true in else")
+end
+```
+
+### Case
+
+```elixir
+case {1, 2, 3} do
+  {4, 5, 6} ->
+    "wont match"
+
+  {1, x, 3} ->
+    "this will match our case,x = #{x}"
+
+  _ ->
+    "default match"
+end
+```
+
+### Cond
+
+```elixir
+cond do
+  1 + 1 == 3 ->
+    "will not run"
+
+  2 * 5 == 11 ->
+    "wont run either"
+
+  true ->
+    "default condition fired"
+end
+```
+
+### With
+
+```elixir
+with {:ok, {_num, _asdf}} <- Integer.parse("123asdf") do
+  IO.puts("hey bub int")
+else
+  err ->
+    err
+end
+```
+
+```elixir
+{a, w} = Integer.parse("34somestring")
+IO.puts("a: #{a}, w=#{w}")
+```
+
+## Types
+
+```elixir
+IO.puts(?a)
+IO.puts(~c"hello")
+is_atom(:na)
+```
+
+You can do type checks using following funcitons
+
+* is_atom/1
+
+* is_bin­ary/1
+
+* is_nil/1
+
+* is_bit­str­ing/1
+
+* is_list/1
+
+* is_num­ber/1
+
+* is_boo­lean/1
+
+* is_map/1
+
+* is_pid/1
+
+* is_fun­ction/1
+
+* is_tuple/1
+
+* is_port/1
+
+* is_fun­ction/2
+
+* is_ref­ere­nce/1
+
+* is_int­eger/1
+
+* is_float/1
+
+## Importing
+
+require Redux # compiles a module
+
+import Redux # compiles, and you can use without the Redux. prefix
+
+use Redux # compiles, and runs Redux._­_u­sin­g__/1
+
+use Redux, async: true
+
+import Redux, only: [dupli­cate: 2]
+
+import Redux, only: :functions
+
+import Redux, only: :macros
+
+import Foo.{Bar, Baz}
+
+## Numbers
+
+### Integer
+
+<!-- livebook:{"break_markdown":true} -->
+
+import Integer
+
+n = 12
+
+n |> digits() # → [1, 2]
+
+n |> to_charlist() # → '12'
+
+n |> to_string() # → "12"
+
+n |> is_even() # -> true
+
+n |> is_odd() # -> false
+
+```elixir
+import Integer
+
+n = 12
+n |> digits()
+# → [1, 2]
+n |> is_even()
+# → "12"
+n |> Integer.to_string()
+```
+
+### Float
+
+```elixir
+import Float
+n = 10.3
+# → 11.0
+n |> Float.ceil()
+# → 10.31
+n |> ceil(2)
+# → "1.030000+e01"
+n |> Float.to_string()
+n |> :erlang.float_to_binary([:compact, {:decimals, 2}])
+
+# string_value = :erlang.float_to_binary(float_value, [:compact, {:decimals, 2}])
+```
+
+### Operations
+
+```elixir
+n = 10.3
+abs(-3)
+Float.round(n)
+# remainder (modulo)
+rem(11, 2)
+# integer division
+div(11, 2)
+```
+
+### Type Casting
+
+```elixir
+# → {34.1, ""}
+Float.parse("34.1")
+# → {34, ""}
+Integer.parse("34")
+# → "3.4100e+01"
+Float.to_string(34.1)
+# → "34.1"
+Float.to_string(34.1, decimals: 2, compact: true)
+:erlang.float_to_binary(34.1, [:compact, {:decimals, 2}])
+
+float_value = 123.456
+string_value = :erlang.float_to_binary(float_value, [:compact, {:decimals, 2}])
+```
+
+## Map
+
+```elixir
+# atom keys (:name)
+m = %{name: "hi"}
+# string keys ("name")
+m = %{"name" => "hi"}
+```
+
+```elixir
+import Map
+m = %{name: "hi"}
+# key must exist as an atom
+m = %{m | name: "yo"}
+# → %{id: 2, name: "hi"}
+m = m |> put(:id, 2)
+# only if `id` doesn't exist (`||=`)
+m = m |> put_new(:id, 3)
+m = m |> put(:b, "Banana")
+m = m |> merge(%{b: "Apple"})
+
+m = m |> Map.update(:a, 100, &(&1 + 1))
+m = m |> Map.update(:a, 0, fn a -> a + 1 end)
+{c, u} = m |> Map.get_and_update(:a, &({&1, &1 + 1} || {"default", "default"}))
+# {c, u} = Map.get_and_update(m, :a, fn
+#   nil -> {"default", "default"}
+#   value -> {value, value + 1}
+# end)
+
+IO.inspect(c, label: "c")
+IO.inspect(u, label: "u")
+# IO.puts(u)
+```
+
+```elixir
+import Map
+
+m = %{name: "jon"}
+# m = m |> delete(:name)  # → %{}
+# → {"John", %{}}
+{name, m} = m |> pop(:name)
+
+IO.inspect(name)
+IO.inspect(m)
+```
+
+### Reading
+
+```elixir
+import Map
+
+m = %{name: "jon", id: 1}
+
+# → 1
+IO.inspect(m |> get(:id))
+# → [:id, :name]
+IO.inspect(m |> keys())
+# → [1, "hi"]
+IO.inspect(m |> values())
+
+m |> to_list()
+```
+
+### Deep
+
+```elixir
+import Map
+
+m = %{name: "jon", id: 1}
+
+# Ensure :b exists and is a map
+m = Map.put(m, :b, %{})
+
+# Now you can use Map.put_in/3
+m = put_in(m, [:b, :c], "Banana")
+
+# Now you can use Map.put_in/3
+m = Map.replace(m, :b, %{c: "apple"})
+
+users = %{
+  john: %{age: 30},
+  jane: %{age: 25}
+}
+
+{current_value, updated_users} = get_and_update_in(users, [:john, :age], &{&1, &1 + 1})
+
+# This will output: 30
+IO.inspect(current_value)
+IO.inspect(updated_users)
+```
+
+### Constructing from lists
+
+```elixir
+Map.new([{:b, 1}, {:a, 2}])
+Map.new(a: 4, b: 6)
+# → %{a: :a, b: :b}
+Map.new([:a, :b], fn x -> {x, x} end)
+```
+
+```elixir
+defmodule AnyStruct do
+  defstruct a: ""
+end
+```
+
+### Working with structs
+
+```elixir
+import Map
+
+# → %{a: "b"}
+m = Map.from_struct(%AnyStruct{a: "b"})
+IO.inspect(m)
+# → User
+%AnyStruct{}.__struct__
+```
+
+## List
+
+```elixir
+import List
+l = [1, 2, 3, 4]
+# push (append)
+l = l ++ [5]
+# unshift (prepend)
+l = [0 | l]
+l |> first()
+l |> last()
+
+nl = [[1, 2], [3, 4]]
+nl |> flatten()
+# l |> flatten(tail)
+```
+
+```elixir
+users = ["nsa", "tom", "jedi"]
+
+Enum.map(users, fn user ->
+  IO.puts("hello " <> user)
+end)
+```
+
+## Enum
+
+### Usage
+
+```elixir
+import Enum
+list = [:a, :b, :c]
+# → :a
+list |> at(0)
+# → 3
+list |> count()
+# → false
+list |> empty?()
+# → true
+list |> any?()
+# → [:a, :b, :c, :d]
+list |> concat([:d])
+```
+
+### Map Reduce
+
+```elixir
+numbers = [1, 2, 3, 4, 5]
+
+sum =
+  Enum.reduce(numbers, 0, fn number, acc ->
+    acc + number
+  end)
+
+IO.puts(sum)
+```
+
+```elixir
+numbers = [1, 2, 3, 4, 5]
+
+product =
+  Enum.reduce(numbers, 1, fn number, acc ->
+    acc * number
+  end)
+
+# This will output: 120
+IO.puts(product)
+```
+
+```elixir
+strings = ["hello", "world", "elixir"]
+
+uppercase_strings =
+  Enum.map(strings, fn string ->
+    String.upcase(string)
+  end)
+
+# This will output: ["HELLO", "WORLD", "ELIXIR"]
+IO.inspect(uppercase_strings)
+```
+
+```elixir
+numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+odd_numbers =
+  Enum.reject(numbers, fn number ->
+    rem(number, 2) == 0
+  end)
+
+# This will output: [1, 3, 5, 7, 9]
+IO.inspect(odd_numbers)
+```
+
+```elixir
+strings = ["apple", "banana", "cherry", "date"]
+
+has_long_string =
+  Enum.any?(strings, fn string ->
+    String.length(string) > 5
+  end)
+
+# This will output: true
+IO.puts(has_long_string)
+```
+
+```elixir
+# Define a list
+list1 = []
+list2 = [1, 2, 3]
+
+# Check if the lists are empty
+is_list1_empty = Enum.empty?(list1)
+is_list2_empty = Enum.empty?(list2)
+
+# This will output: Is list1 empty? true
+IO.puts("Is list1 empty? #{is_list1_empty}")
+# This will output: Is list2 empty? false
+IO.puts("Is list2 empty? #{is_list2_empty}")
+```
+
+```elixir
+[1, 2, 3, 4]
+|> Enum.reduce(0, fn x, acc -> x + acc end)
+```
+
+## Tuple
+
+### Tuples
+
+```elixir
+import Tuple
+t = {:a, :b}
+# like tuple[1]
+t |> elem(1)
+t |> put_elem(1, :c)
+t |> tuple_size()
+```
+
+### Keyword Lists
+
+```elixir
+list = [{:name, "John"}, {:age, 15}]
+list[:name]
+# For string-keyed keyword lists
+list = [{"size", 2}, {"type", "shoe"}]
+# → {"size", 2}
+List.keyfind(list, "size", 0)
+```
+
+## Functions
+
+### Lambdas
+
+```elixir
+square = fn n -> n * n end
+square.(2)
+```
+
+### & syntax
+
+```elixir
+square = &(&1 * &1)
+square.(8)
+
+# square = &Math.square/1
+```
+
+### Running
+
+```elixir
+fun = fn n ->
+  n
+end
+
+add = fn a, b ->
+  a + b
+end
+
+fun.(2)
+
+apply(add, [3, 4])
+
+apply(Enum, :reverse, [[1, 2, 3]])
+```
+
+### Function heads
+
+```elixir
+defmodule Mymath do
+  def join(a, b \\ nil), do: {a, b}
+  def join(a, b) when is_nil(b), do: a
+  def sum(a, b), do: a + b
+end
+
+IO.inspect(Mymath.join(3))
+IO.inspect(Mymath.join(5, nil))
+IO.inspect(Mymath.sum(10, 1))
+
+# def join(a, b \\ nil)
+# def join(a, b) when is_nil(b), do: a
+# def sum(a, b), do: a + b
+# def join(a, b) do: a <> b
+```
+
+## Structs
+
+```elixir
+defmodule User do
+  defstruct name: "", age: nil
+end
+```
+
+```elixir
+%User{name: "John", age: 20}
+
+# → User
+%User{}.__struct__
+```
+
+## Protocols
+
+Defining Protocols
+
+```elixir
+defprotocol Blank do
+  @doc "Returns true if data is considered blank/empty"
+  def blank?(data)
+end
+
+defimpl Blank, for: List do
+  def blank?([]), do: true
+  def blank?(_), do: false
+end
+
+# → true
+Blank.blank?([])
+```
+
+### Any
+
+```elixir
+defimpl Blank, for: Any do
+  ...
+end
+
+defmodule User do
+  # Falls back to Any
+  @derive Blank
+  defstruct name: ""
+end
+```
+
+## Comprehensions
+
+### For
+
+```elixir
+for n <- [1, 2, 3, 4], do: n * n
+for n <- 1..4, do: n * n
+for {key, val} <- %{a: 10, b: 20}, do: val
+# → [10, 20]
+for {key, val} <- %{a: 10, b: 20}, into: %{}, do: {key, val * val}
+```
+
+### Conditions
+
+```elixir
+for n <- 1..10, rem(n, 2) == 0, do: n
+# → [2, 4, 6, 8, 10]
+```
+
+### Complex
+
+```elixir
+for dir <- dirs,
+    # nested comprehension
+    file <- File.ls!(dir),
+    # invoked
+    path = Path.join(dir, file),
+    # condition
+    File.regular?(path) do
+  IO.puts(file)
+end
+```
+
+## Misc
+
+### Meta Programming
+
+```elixir
+__MODULE__
+__MODULE__.__info__()
+
+@after_compile __MODULE__
+def __before_compile__(env)
+def __after_compile__(env, _bytecode)
+# invoked on `use`
+def __using__(opts)
+
+@on_definition {__MODULE__, :on_def}
+def on_def(_env, kind, name, args, guards, body)
+
+@on_load :load_check
+def load_check
+```
+
+### Regexp
+
+```elixir
+exp = ~r/hello/
+exp = ~r/hello/i
+"hello world" =~ exp
+```
+
+### Sigils
+
+```elixir
+~r/regexp/
+~w(list of strings)
+~s|strings with #{interpolation} and \x20 escape codes|
+~S|no interpolation and no escapes|
+~c(charlist)
+```
+
+### Type specs
+
+```elixir
+@spec round(number) :: integer
+
+@type number_with_remark :: {number, String.t()}
+@spec add(number, number) :: number_with_remark
+```
+
+### Behaviours
+
+```elixir
+defmodule Parser do
+  @callback parse(String.t()) :: any
+  @callback extensions() :: [String.t()]
+end
+
+defmodule JSONParser do
+  @behaviour Parser
+
+  # ... parse JSON
+  def parse(str), do: def(extensions, do: ["json"])
+end
+```
